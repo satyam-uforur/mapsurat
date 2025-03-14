@@ -1,16 +1,12 @@
 import React, { useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from 'react-leaflet';
 import { Icon } from 'leaflet';
-import { MapPin } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 
 // Surat coordinates
-const SURAT_CENTER = {
-  latitude: 21.1702,
-  longitude: 72.8311
-};
+const SURAT_CENTER = { latitude: 21.1702, longitude: 72.8311 };
 
-// Expanded price data for different areas
+// Sample area price data
 const AREA_PRICES = {
   'Vesu': { min: 45000, max: 65000 },
   'Adajan': { min: 50000, max: 70000 },
@@ -90,13 +86,13 @@ function App() {
     <div className="h-screen flex flex-col">
       <header className="bg-blue-600 text-white p-4">
         <h1 className="text-2xl font-bold">Surat Land Valuation Map</h1>
-        <p className="text-sm opacity-90">Click on markers to view estimated land prices in different areas</p>
+        <p className="text-sm opacity-90">Click on markers to view estimated land prices</p>
       </header>
 
       <div className="flex-1 relative">
         <MapContainer
           center={[SURAT_CENTER.latitude, SURAT_CENTER.longitude]}
-          zoom={11.5}
+          zoom={12}
           style={{ width: '100%', height: '100%' }}
           zoomControl={false}
         >
@@ -105,15 +101,13 @@ function App() {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          
+
           {locations.map((location) => (
             <Marker
               key={location.name}
               position={[location.latitude, location.longitude]}
               icon={customIcon}
-              eventHandlers={{
-                click: () => setSelectedLocation(location)
-              }}
+              eventHandlers={{ click: () => setSelectedLocation(location) }}
             >
               {selectedLocation?.name === location.name && (
                 <Popup>
@@ -121,8 +115,7 @@ function App() {
                     <h3 className="font-bold text-lg">{location.name}</h3>
                     <p className="text-sm text-gray-600">Estimated Price Range (per sq. ft):</p>
                     <p className="font-semibold">
-                      ₹{location.price.min.toLocaleString()} - 
-                      ₹{location.price.max.toLocaleString()}
+                      ₹{location.price.min.toLocaleString()} - ₹{location.price.max.toLocaleString()}
                     </p>
                   </div>
                 </Popup>
@@ -131,7 +124,8 @@ function App() {
           ))}
         </MapContainer>
 
-        <div className="absolute bottom-4 right-4 bg-white p-4 rounded-lg shadow-lg">
+        {/* Legend: Placed at top-left above the map */}
+        <div className="absolute top-4 left-4 bg-white bg-opacity-90 p-4 rounded-lg shadow-lg">
           <h2 className="font-bold text-lg mb-2">Legend</h2>
           <div className="space-y-1">
             <p className="text-sm">📍 Click markers to view prices</p>
@@ -140,16 +134,15 @@ function App() {
           </div>
         </div>
 
-        <div className="absolute top-4 left-4 bg-white p-4 rounded-lg shadow-lg max-h-96 overflow-y-auto">
+        {/* Scrollable Areas List: Fixed right side */}
+        <div className="absolute top-4 right-4 bg-white p-4 rounded-lg shadow-lg max-h-48 overflow-y-auto w-48">
           <h2 className="font-bold text-lg mb-2">Areas</h2>
           <div className="space-y-1">
-            {locations.map(location => (
+            {locations.map((location) => (
               <button
                 key={location.name}
                 className="block w-full text-left px-2 py-1 hover:bg-blue-50 rounded transition-colors"
-                onClick={() => {
-                  setSelectedLocation(location);
-                }}
+                onClick={() => setSelectedLocation(location)}
               >
                 {location.name}
               </button>
